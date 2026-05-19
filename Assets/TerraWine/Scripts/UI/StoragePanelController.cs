@@ -21,6 +21,12 @@ namespace TerraWine.UI
             Refresh();
         }
 
+        private void Start()
+        {
+            Bind();
+            Refresh();
+        }
+
         private void OnDisable()
         {
             if (session?.StorageSystem != null)

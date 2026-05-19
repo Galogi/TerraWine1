@@ -10,8 +10,8 @@ namespace TerraWine.Winery
     {
         private readonly Dictionary<string, SeedRuntimeDefinition> seedDefinitions = new Dictionary<string, SeedRuntimeDefinition>
         {
-            { "seed_merlot", new SeedRuntimeDefinition("seed_merlot", "Merlot Seed", "grape_merlot", "Merlot Grapes", 300, 2, 2) },
-            { "seed_muscat", new SeedRuntimeDefinition("seed_muscat", "Muscat Seed", "grape_muscat", "Muscat Grapes", 240, 1, 2) }
+            { "seed_merlot", new SeedRuntimeDefinition("seed_merlot", "Merlot Seed", "grape_merlot", "Merlot Grapes", 20, 2, 2) },
+            { "seed_muscat", new SeedRuntimeDefinition("seed_muscat", "Muscat Seed", "grape_muscat", "Muscat Grapes", 15, 1, 2) }
         };
 
         private GameSession session;

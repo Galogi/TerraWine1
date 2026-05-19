@@ -27,6 +27,12 @@ namespace TerraWine.UI
             Refresh();
         }
 
+        private void Start()
+        {
+            TryBind();
+            Refresh();
+        }
+
         private void OnDisable()
         {
             UnsubscribeFromSessionSystems();

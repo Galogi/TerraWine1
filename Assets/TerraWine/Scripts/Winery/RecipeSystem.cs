@@ -15,7 +15,7 @@ namespace TerraWine.Winery
                     "house_red",
                     "House Red",
                     new List<RecipeIngredient> { new RecipeIngredient("grape_merlot", "Merlot Grapes", 2) },
-                    600,
+                    30,
                     35,
                     55)
             },
@@ -25,7 +25,7 @@ namespace TerraWine.Winery
                     "sunny_semidry",
                     "Sunny Semi-Dry",
                     new List<RecipeIngredient> { new RecipeIngredient("grape_muscat", "Muscat Grapes", 2) },
-                    480,
+                    25,
                     30,
                     52)
             }
