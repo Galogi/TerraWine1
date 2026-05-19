@@ -7,6 +7,9 @@ namespace TerraWine.Core
         public static GameSession Session { get; private set; }
 
         [SerializeField] private bool autoLoadOrCreateGame = true;
+        [SerializeField] private float vineyardTickSeconds = 1f;
+
+        private float nextVineyardTickTime;
 
         private void Awake()
         {
@@ -14,6 +17,11 @@ namespace TerraWine.Core
             {
                 Destroy(gameObject);
                 return;
+            }
+
+            if (transform.parent != null)
+            {
+                transform.SetParent(null);
             }
 
             DontDestroyOnLoad(gameObject);
@@ -35,6 +43,17 @@ namespace TerraWine.Core
             {
                 Session?.SaveGame();
             }
+        }
+
+        private void Update()
+        {
+            if (Session?.VineyardSystem == null || Time.unscaledTime < nextVineyardTickTime)
+            {
+                return;
+            }
+
+            nextVineyardTickTime = Time.unscaledTime + vineyardTickSeconds;
+            Session.VineyardSystem.UpdateGrowth();
         }
 
         private void OnApplicationQuit()

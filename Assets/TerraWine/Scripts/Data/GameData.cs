@@ -39,6 +39,15 @@ namespace TerraWine.Data
         SpecialItem
     }
 
+    public enum VineyardPlotState
+    {
+        Empty,
+        Planted,
+        NeedsWater,
+        Growing,
+        Ready
+    }
+
     [Serializable]
     public class GameData
     {
@@ -153,7 +162,10 @@ namespace TerraWine.Data
         public string plantedSeedId;
         public string grapeId;
         public string plantedAtUtc;
+        public string wateredAtUtc;
         public string readyAtUtc;
+        public int waterRequired;
+        public int harvestAmount = 1;
         public bool isWatered;
         public bool isReadyToHarvest;
     }

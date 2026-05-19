@@ -41,6 +41,7 @@ namespace TerraWine.Core
                 }
             }
 
+            session.VineyardSystem?.UpdateGrowth(now);
             bool dailyRefreshed = session.DailyActionSystem.RefreshIfNeeded();
             data.offlineNotifications.Clear();
             data.offlineNotifications.Add($"Elapsed offline time: {FormatElapsed(LastElapsed)}.");
