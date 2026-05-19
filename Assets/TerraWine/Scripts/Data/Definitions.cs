@@ -62,8 +62,11 @@ namespace TerraWine.Data
     public class ShopItemDefinition : TerraWineDefinition
     {
         public string itemId;
-        public InventoryItemType itemType;
-        public ResourceData cost = new ResourceData();
+        public ShopItemCategory category;
+        public string targetId;
+        public int price = 10;
+        public int quantity = 1;
+        public int unlockYear = 1;
     }
 
     [CreateAssetMenu(menuName = "TerraWine/Decorations/Decoration Definition")]

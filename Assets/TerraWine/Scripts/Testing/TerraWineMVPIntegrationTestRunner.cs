@@ -46,6 +46,7 @@ namespace TerraWine.Testing
                 TestStorageRules();
                 TestBarrelLoop();
                 TestOfflineProgress();
+                TestShop();
                 TestDailyActions();
             }
             catch (Exception exception)
@@ -63,6 +64,7 @@ namespace TerraWine.Testing
             PassIf(session.TimeSystem != null, "TimeSystem exists.");
             PassIf(session.OfflineProgressSystem != null, "OfflineProgressSystem exists.");
             PassIf(session.ResourceSystem != null, "ResourceSystem exists.");
+            PassIf(session.ShopSystem != null, "ShopSystem exists.");
             PassIf(session.InventorySystem != null, "InventorySystem exists.");
             PassIf(session.StorageSystem != null, "StorageSystem exists.");
             PassIf(session.VineyardSystem != null, "VineyardSystem exists.");
@@ -275,6 +277,39 @@ namespace TerraWine.Testing
             PassIf(refreshed, "Daily actions refresh after crossing 08:00.");
             PassIf(session.DailyActionSystem.ActionsRemaining == max, "Daily actions refresh back to max.");
             PassIf(session.DailyActionSystem.ActionsRemaining <= max, "Daily actions never exceed max.");
+        }
+
+        private void TestShop()
+        {
+            Info("SHOP TEST");
+            session.StartNewGame();
+            PassIf(session.ShopSystem != null, "ShopSystem exists.");
+            PassIf(session.ShopSystem.Catalog.Count > 0, "Shop catalog has items.");
+
+            int moneyBeforeSeed = session.ResourceSystem.Money;
+            int merlotBefore = session.InventorySystem.GetAmount("seed_merlot");
+            PassIf(session.ShopSystem.Buy("shop_seed_merlot"), "Buying a seed succeeds.");
+            PassIf(session.ResourceSystem.Money < moneyBeforeSeed, "Buying a seed decreases money.");
+            PassIf(session.InventorySystem.GetAmount("seed_merlot") == merlotBefore + 1, "Buying a seed increases seed count.");
+
+            session.Data.resources.money = 0;
+            int moneyBeforeFail = session.ResourceSystem.Money;
+            bool expensiveBought = session.ShopSystem.Buy("shop_barrel_better_oak");
+            PassIf(!expensiveBought, "Expensive purchase fails without enough money.");
+            PassIf(session.ResourceSystem.Money == moneyBeforeFail && session.ResourceSystem.Money >= 0, "Failed purchase does not make money negative.");
+
+            session.Data.resources.money = 1000;
+            int plotsBefore = session.Data.winery.vineyardPlots.Count;
+            PassIf(session.ShopSystem.Buy("shop_vineyard_plot"), "Buying vineyard expansion succeeds.");
+            PassIf(session.Data.winery.vineyardPlots.Count == plotsBefore + 1, "Vineyard plot count increases.");
+
+            int maxCapacityBefore = session.StorageSystem.MaxCapacity;
+            PassIf(session.ShopSystem.Buy("shop_storage_upgrade"), "Buying storage upgrade succeeds.");
+            PassIf(session.StorageSystem.MaxCapacity > maxCapacityBefore, "Storage max capacity increases.");
+
+            int barrelsBefore = session.Data.winery.barrels.Count;
+            PassIf(session.ShopSystem.Buy("shop_barrel_basic_oak"), "Buying a barrel succeeds.");
+            PassIf(session.Data.winery.barrels.Count == barrelsBefore + 1, "Barrel count increases.");
         }
 
         private WineRecipeRuntimeDefinition GetFirstOwnedAvailableRecipe()

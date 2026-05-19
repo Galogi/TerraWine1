@@ -55,6 +55,15 @@ namespace TerraWine.Data
         Ready
     }
 
+    public enum ShopItemCategory
+    {
+        Seeds,
+        Barrels,
+        Vineyard,
+        Storage,
+        Vault
+    }
+
     [Serializable]
     public class GameData
     {
@@ -65,6 +74,7 @@ namespace TerraWine.Data
         public WineryData winery = new WineryData();
         public InventoryData inventory = new InventoryData();
         public StorageData storage = new StorageData();
+        public ShopData shop = new ShopData();
         public ResourceData resources = new ResourceData();
         public CalendarData calendar = new CalendarData();
         public DailyActionData dailyActions = new DailyActionData();
@@ -123,6 +133,21 @@ namespace TerraWine.Data
         public int usedCapacity;
         public int maxCapacity = 100;
         public int upgradeLevel;
+    }
+
+    [Serializable]
+    public class ShopData
+    {
+        public List<ShopPurchaseData> purchases = new List<ShopPurchaseData>();
+    }
+
+    [Serializable]
+    public class ShopPurchaseData
+    {
+        public string purchaseId = Guid.NewGuid().ToString("N");
+        public string itemId;
+        public string purchasedAtUtc;
+        public int quantity;
     }
 
     [Serializable]

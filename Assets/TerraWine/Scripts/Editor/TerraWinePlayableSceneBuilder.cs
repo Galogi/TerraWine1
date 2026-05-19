@@ -94,6 +94,7 @@ namespace TerraWine.EditorTools
             CreateProductionPanel(middleColumn.transform);
 
             GameObject rightColumn = CreateColumn(body.transform, 0.8f);
+            CreateShopPanel(rightColumn.transform);
             CreateBarrelPanel(rightColumn.transform);
         }
 
@@ -259,6 +260,41 @@ namespace TerraWine.EditorTools
             SetObject(controller, "grapesText", grapes);
             SetObject(controller, "wineBottlesText", bottles);
             SetObject(controller, "itemsText", items);
+        }
+
+        private static void CreateShopPanel(Transform parent)
+        {
+            GameObject panel = CreateSection(parent, "Shop", 1f);
+            ShopPanelController controller = panel.AddComponent<ShopPanelController>();
+            TMP_Text money = AddText(panel.transform, "ShopMoney", "Money: -", 20, FontStyles.Bold, TextAlignmentOptions.Left);
+            TMP_Text message = AddText(panel.transform, "ShopMessage", "", 17, FontStyles.Normal, TextAlignmentOptions.Left);
+            AddHeaderRow(panel.transform, "Item", "Category", "Price", "Description", "Action");
+            Transform rowsRoot = CreateRowsRoot(panel.transform, "ShopRows");
+            ShopItemRowController row = CreateShopRow(rowsRoot, "ShopRowTemplate");
+            row.gameObject.SetActive(false);
+
+            SetObject(controller, "moneyText", money);
+            SetObject(controller, "messageText", message);
+            SetObject(controller, "rowsRoot", rowsRoot);
+            SetObject(controller, "rowPrefab", row);
+        }
+
+        private static ShopItemRowController CreateShopRow(Transform parent, string name)
+        {
+            GameObject rowObject = CreateRow(parent, name);
+            ShopItemRowController row = rowObject.AddComponent<ShopItemRowController>();
+            TMP_Text itemName = AddCell(rowObject.transform, "Item");
+            TMP_Text category = AddCell(rowObject.transform, "Category");
+            TMP_Text price = AddCell(rowObject.transform, "Price");
+            TMP_Text description = AddCell(rowObject.transform, "Description");
+            Button buy = AddButton(rowObject.transform, "Buy", new Color(0.32f, 0.43f, 0.28f));
+
+            SetObject(row, "nameText", itemName);
+            SetObject(row, "categoryText", category);
+            SetObject(row, "priceText", price);
+            SetObject(row, "descriptionText", description);
+            SetObject(row, "buyButton", buy);
+            return row;
         }
 
         private static void CreateBarrelPanel(Transform parent)

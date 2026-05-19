@@ -218,6 +218,17 @@ namespace TerraWine.Winery
             return string.Empty;
         }
 
+        public VineyardPlotData AddEmptyPlot()
+        {
+            VineyardPlotData plot = new VineyardPlotData
+            {
+                plotId = $"plot_{data.winery.vineyardPlots.Count + 1:000}"
+            };
+            data.winery.vineyardPlots.Add(plot);
+            VineyardChanged?.Invoke();
+            return plot;
+        }
+
         private void EnsureStartingPlots()
         {
             if (data.winery.vineyardPlots.Count == 0)

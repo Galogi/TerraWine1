@@ -10,6 +10,7 @@ namespace TerraWine.Winery
         private readonly Dictionary<string, BarrelRuntimeDefinition> barrelDefinitions = new Dictionary<string, BarrelRuntimeDefinition>
         {
             { "barrel_basic_oak", new BarrelRuntimeDefinition("barrel_basic_oak", "Basic Oak Barrel", 45, 5, 10, 5, 1) },
+            { "barrel_better_oak", new BarrelRuntimeDefinition("barrel_better_oak", "Better Oak Barrel", 60, 8, 18, 8, 1) },
             { "basic_oak_barrel", new BarrelRuntimeDefinition("barrel_basic_oak", "Basic Oak Barrel", 45, 5, 10, 5, 1) }
         };
 
@@ -190,6 +191,20 @@ namespace TerraWine.Winery
             }
 
             return barrelDefinitions["barrel_basic_oak"];
+        }
+
+        public BarrelData AddBarrel(string barrelDefinitionId)
+        {
+            BarrelRuntimeDefinition definition = GetDefinition(barrelDefinitionId);
+            BarrelData barrel = new BarrelData
+            {
+                barrelId = $"barrel_{data.winery.barrels.Count + 1:000}",
+                barrelDefinitionId = definition.Id,
+                displayName = definition.DisplayName
+            };
+            data.winery.barrels.Add(barrel);
+            BarrelsChanged?.Invoke();
+            return barrel;
         }
 
         public WineBottleData GetBottleInside(BarrelData barrel)

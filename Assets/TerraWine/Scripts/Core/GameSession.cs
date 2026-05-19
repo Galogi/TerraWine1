@@ -16,6 +16,7 @@ namespace TerraWine.Core
         public CalendarSystem CalendarSystem { get; private set; }
         public DailyActionSystem DailyActionSystem { get; private set; }
         public ResourceSystem ResourceSystem { get; private set; }
+        public ShopSystem ShopSystem { get; private set; }
         public StorageSystem StorageSystem { get; private set; }
         public InventorySystem InventorySystem { get; private set; }
         public TutorialSystem TutorialSystem { get; private set; }
@@ -80,6 +81,7 @@ namespace TerraWine.Core
             CalendarSystem = new CalendarSystem();
             DailyActionSystem = new DailyActionSystem();
             ResourceSystem = new ResourceSystem();
+            ShopSystem = new ShopSystem();
             StorageSystem = new StorageSystem();
             InventorySystem = new InventorySystem();
             TutorialSystem = new TutorialSystem();
@@ -93,6 +95,7 @@ namespace TerraWine.Core
             CalendarSystem.Initialize(this, Data);
             DailyActionSystem.Initialize(this, Data);
             ResourceSystem.Initialize(this, Data);
+            ShopSystem.Initialize(this, Data);
             StorageSystem.Initialize(this, Data);
             InventorySystem.Initialize(this, Data);
             TutorialSystem.Initialize(this, Data);
