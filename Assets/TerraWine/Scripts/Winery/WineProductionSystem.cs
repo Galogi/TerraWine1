@@ -112,11 +112,17 @@ namespace TerraWine.Winery
             {
                 itemId = bottleItemId,
                 recipeId = recipe.Id,
+                displayName = $"{recipe.DisplayName} Bottle",
                 producedAtUtc = session.TimeSystem.ToSaveString(session.TimeSystem.UtcNow),
+                quality = quality,
                 qualityScore = quality,
+                basePrice = recipe.BasePrice,
+                currentPrice = Math.Max(1, recipe.BasePrice + quality / 3),
+                competitionScore = quality,
                 salePrice = Math.Max(1, recipe.BasePrice + quality / 3),
                 isAged = false
             };
+            bottle.wineBottleId = bottle.bottleId;
 
             if (!session.InventorySystem.TryAddItem(bottleItemId, InventoryItemType.WineBottle, task.amount))
             {

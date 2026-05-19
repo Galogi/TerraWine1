@@ -48,6 +48,13 @@ namespace TerraWine.Data
         Ready
     }
 
+    public enum BarrelState
+    {
+        Empty,
+        Aging,
+        Ready
+    }
+
     [Serializable]
     public class GameData
     {
@@ -176,10 +183,12 @@ namespace TerraWine.Data
     {
         public string barrelId = Guid.NewGuid().ToString("N");
         public string barrelDefinitionId;
+        public string displayName;
         public string wineBottleId;
         public string agingStartedAtUtc;
         public string agingEndsAtUtc;
         public bool isAging;
+        public bool isReadyToCollect;
     }
 
     [Serializable]
@@ -195,13 +204,21 @@ namespace TerraWine.Data
     public class WineBottleData
     {
         public string bottleId = Guid.NewGuid().ToString("N");
+        public string wineBottleId;
         public string itemId;
         public string recipeId;
+        public string displayName;
         public string barrelDefinitionId;
         public string producedAtUtc;
+        public int quality;
         public int qualityScore;
+        public int basePrice;
+        public int currentPrice;
+        public int competitionScore;
         public int salePrice;
         public bool isAged;
+        public string barrelIdUsed;
+        public bool agingBonusApplied;
     }
 
     [Serializable]

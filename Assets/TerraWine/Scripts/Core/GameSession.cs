@@ -23,6 +23,7 @@ namespace TerraWine.Core
         public RecipeSystem RecipeSystem { get; private set; }
         public WineQualitySystem WineQualitySystem { get; private set; }
         public WineProductionSystem WineProductionSystem { get; private set; }
+        public BarrelSystem BarrelSystem { get; private set; }
         public GameData Data { get; private set; }
         public bool IsLoaded { get; private set; }
 
@@ -86,6 +87,7 @@ namespace TerraWine.Core
             RecipeSystem = new RecipeSystem();
             WineQualitySystem = new WineQualitySystem();
             WineProductionSystem = new WineProductionSystem();
+            BarrelSystem = new BarrelSystem();
             OfflineProgressSystem = new OfflineProgressSystem();
 
             CalendarSystem.Initialize(this, Data);
@@ -98,6 +100,7 @@ namespace TerraWine.Core
             RecipeSystem.Initialize(this, Data);
             WineQualitySystem.Initialize(this, Data);
             WineProductionSystem.Initialize(this, Data);
+            BarrelSystem.Initialize(this, Data);
             OfflineProgressSystem.Initialize(this, Data);
         }
 
@@ -124,7 +127,7 @@ namespace TerraWine.Core
             gameData.inventory.stacks.Add(new InventoryStackData { itemId = "seed_muscat", itemType = InventoryItemType.Seed, amount = 3 });
             gameData.storage.usedCapacity = 8;
             gameData.winery.vineyardPlots.Add(new VineyardPlotData { plotId = "plot_001" });
-            gameData.winery.barrels.Add(new BarrelData { barrelId = "barrel_001", barrelDefinitionId = "basic_oak_barrel" });
+            gameData.winery.barrels.Add(new BarrelData { barrelId = "barrel_001", barrelDefinitionId = "barrel_basic_oak", displayName = "Basic Oak Barrel" });
             gameData.competitions.Add(new CompetitionData { competitionId = "year_1_local_fair", year = 1 });
             gameData.competitions.Add(new CompetitionData { competitionId = "year_2_regional_cup", year = 2 });
             gameData.competitions.Add(new CompetitionData { competitionId = "year_3_final_championship", year = 3 });

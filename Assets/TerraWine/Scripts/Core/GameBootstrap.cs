@@ -55,6 +55,7 @@ namespace TerraWine.Core
             nextVineyardTickTime = Time.unscaledTime + vineyardTickSeconds;
             Session.VineyardSystem.UpdateGrowth();
             Session.WineProductionSystem?.UpdateProduction();
+            Session.BarrelSystem?.UpdateAging();
         }
 
         private void OnApplicationQuit()

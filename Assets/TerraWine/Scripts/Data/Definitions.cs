@@ -48,9 +48,14 @@ namespace TerraWine.Data
     public class BarrelDefinition : TerraWineDefinition
     {
         public int agingSeconds = 900;
+        public int agingDurationSeconds = 900;
+        public int qualityBonus = 5;
+        public int priceBonus = 10;
+        public int competitionScoreBonus = 5;
         public float priceMultiplier = 1.1f;
         public int scoreBonus = 5;
         public int capacity = 1;
+        public int slotCount = 1;
     }
 
     [CreateAssetMenu(menuName = "TerraWine/Shop/Shop Item Definition")]
