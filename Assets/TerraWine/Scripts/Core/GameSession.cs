@@ -3,6 +3,7 @@ using TerraWine.Data;
 using TerraWine.Economy;
 using TerraWine.Inventory;
 using TerraWine.Tutorial;
+using TerraWine.WorldMap;
 using TerraWine.Winery;
 using UnityEngine;
 
@@ -17,6 +18,9 @@ namespace TerraWine.Core
         public DailyActionSystem DailyActionSystem { get; private set; }
         public ResourceSystem ResourceSystem { get; private set; }
         public ShopSystem ShopSystem { get; private set; }
+        public WeatherSystem WeatherSystem { get; private set; }
+        public FortuneTellerSystem FortuneTellerSystem { get; private set; }
+        public WorldMapSystem WorldMapSystem { get; private set; }
         public StorageSystem StorageSystem { get; private set; }
         public InventorySystem InventorySystem { get; private set; }
         public TutorialSystem TutorialSystem { get; private set; }
@@ -82,6 +86,9 @@ namespace TerraWine.Core
             DailyActionSystem = new DailyActionSystem();
             ResourceSystem = new ResourceSystem();
             ShopSystem = new ShopSystem();
+            WeatherSystem = new WeatherSystem();
+            FortuneTellerSystem = new FortuneTellerSystem();
+            WorldMapSystem = new WorldMapSystem();
             StorageSystem = new StorageSystem();
             InventorySystem = new InventorySystem();
             TutorialSystem = new TutorialSystem();
@@ -96,6 +103,9 @@ namespace TerraWine.Core
             DailyActionSystem.Initialize(this, Data);
             ResourceSystem.Initialize(this, Data);
             ShopSystem.Initialize(this, Data);
+            WeatherSystem.Initialize(this, Data);
+            FortuneTellerSystem.Initialize(this, Data);
+            WorldMapSystem.Initialize(this, Data);
             StorageSystem.Initialize(this, Data);
             InventorySystem.Initialize(this, Data);
             TutorialSystem.Initialize(this, Data);

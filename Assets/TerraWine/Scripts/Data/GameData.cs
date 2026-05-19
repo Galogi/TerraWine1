@@ -25,6 +25,7 @@ namespace TerraWine.Data
         VineyardGrowth,
         WineProduction,
         BarrelAging,
+        WorldMapGathering,
         RecipeRecovery,
         TemporaryModifier
     }
@@ -64,6 +65,27 @@ namespace TerraWine.Data
         Vault
     }
 
+    public enum WorldMapNodeType
+    {
+        WaterSource,
+        Forest,
+        MetalMine,
+        Ruins
+    }
+
+    public enum WorldMapDistance
+    {
+        Near,
+        Mid,
+        Far
+    }
+
+    public enum WeatherType
+    {
+        Sunny,
+        Rain
+    }
+
     [Serializable]
     public class GameData
     {
@@ -76,6 +98,8 @@ namespace TerraWine.Data
         public StorageData storage = new StorageData();
         public ShopData shop = new ShopData();
         public ResourceData resources = new ResourceData();
+        public WorldMapData worldMap = new WorldMapData();
+        public WeatherData weather = new WeatherData();
         public CalendarData calendar = new CalendarData();
         public DailyActionData dailyActions = new DailyActionData();
         public List<TimedTaskData> timedTasks = new List<TimedTaskData>();
@@ -157,6 +181,42 @@ namespace TerraWine.Data
         public int water;
         public int wood;
         public int metal;
+    }
+
+    [Serializable]
+    public class WorldMapData
+    {
+        public WineryLocationData wineryLocation = new WineryLocationData();
+        public List<WorldMapNodeData> nodes = new List<WorldMapNodeData>();
+        public List<string> ruinsRewardHistory = new List<string>();
+    }
+
+    [Serializable]
+    public class WineryLocationData
+    {
+        public bool isPlaced;
+        public string locationId = "starting_hill";
+        public Vector2Serializable position = new Vector2Serializable();
+    }
+
+    [Serializable]
+    public class WorldMapNodeData
+    {
+        public string nodeId;
+        public bool isDiscovered = true;
+        public int timesUsed;
+        public string lastUsedAtUtc;
+    }
+
+    [Serializable]
+    public class WeatherData
+    {
+        public WeatherType currentWeather = WeatherType.Sunny;
+        public WeatherType todayForecast = WeatherType.Sunny;
+        public WeatherType tomorrowForecast = WeatherType.Sunny;
+        public string generatedAtUtc;
+        public bool rainRewardAppliedToday;
+        public string lastForecastMessage;
     }
 
     [Serializable]

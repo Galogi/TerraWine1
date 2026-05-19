@@ -56,6 +56,7 @@ namespace TerraWine.Core
             Session.VineyardSystem.UpdateGrowth();
             Session.WineProductionSystem?.UpdateProduction();
             Session.BarrelSystem?.UpdateAging();
+            Session.WorldMapSystem?.UpdateWorldTasks();
         }
 
         private void OnApplicationQuit()

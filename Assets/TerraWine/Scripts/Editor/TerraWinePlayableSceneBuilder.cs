@@ -91,6 +91,7 @@ namespace TerraWine.EditorTools
             CreateStoragePanel(leftColumn.transform);
 
             GameObject middleColumn = CreateColumn(body.transform, 1.05f);
+            CreateWorldMapPanel(middleColumn.transform);
             CreateProductionPanel(middleColumn.transform);
 
             GameObject rightColumn = CreateColumn(body.transform, 0.8f);
@@ -244,6 +245,52 @@ namespace TerraWine.EditorTools
             SetObject(row, "stateText", state);
             SetObject(row, "timeRemainingText", time);
             SetObject(row, "collectButton", collect);
+            return row;
+        }
+
+        private static void CreateWorldMapPanel(Transform parent)
+        {
+            GameObject panel = CreateSection(parent, "World Map", 1f);
+            WorldMapPanelController controller = panel.AddComponent<WorldMapPanelController>();
+            TMP_Text actions = AddText(panel.transform, "WorldActions", "Actions: -", 18, FontStyles.Bold, TextAlignmentOptions.Left);
+            TMP_Text weather = AddText(panel.transform, "Weather", "Weather: -", 18, FontStyles.Bold, TextAlignmentOptions.Left);
+            TMP_Text forecast = AddText(panel.transform, "Forecast", "Forecast: -", 17, FontStyles.Normal, TextAlignmentOptions.Left);
+            TMP_Text message = AddText(panel.transform, "WorldMapMessage", "", 17, FontStyles.Normal, TextAlignmentOptions.Left);
+            GameObject buttons = CreateActionGroup(panel.transform, "WorldMapButtons");
+            Button fortune = AddButton(buttons.transform, "Ask Fortune Teller", new Color(0.38f, 0.31f, 0.52f));
+            Button collect = AddButton(buttons.transform, "Collect Completed World Task", new Color(0.36f, 0.45f, 0.28f));
+            AddHeaderRow(panel.transform, "Node", "Type", "Distance", "Reward", "Cost", "Action");
+            Transform rowsRoot = CreateRowsRoot(panel.transform, "WorldMapRows");
+            WorldMapNodeRowController row = CreateWorldMapRow(rowsRoot, "WorldMapRowTemplate");
+            row.gameObject.SetActive(false);
+
+            SetObject(controller, "actionsText", actions);
+            SetObject(controller, "weatherText", weather);
+            SetObject(controller, "forecastText", forecast);
+            SetObject(controller, "messageText", message);
+            SetObject(controller, "fortuneButton", fortune);
+            SetObject(controller, "collectTaskButton", collect);
+            SetObject(controller, "rowsRoot", rowsRoot);
+            SetObject(controller, "rowPrefab", row);
+        }
+
+        private static WorldMapNodeRowController CreateWorldMapRow(Transform parent, string name)
+        {
+            GameObject rowObject = CreateRow(parent, name);
+            WorldMapNodeRowController row = rowObject.AddComponent<WorldMapNodeRowController>();
+            TMP_Text nodeName = AddCell(rowObject.transform, "Node");
+            TMP_Text type = AddCell(rowObject.transform, "Type");
+            TMP_Text distance = AddCell(rowObject.transform, "Distance");
+            TMP_Text reward = AddCell(rowObject.transform, "Reward");
+            TMP_Text cost = AddCell(rowObject.transform, "Cost");
+            Button action = AddButton(rowObject.transform, "Gather", new Color(0.29f, 0.43f, 0.35f));
+
+            SetObject(row, "nameText", nodeName);
+            SetObject(row, "typeText", type);
+            SetObject(row, "distanceText", distance);
+            SetObject(row, "rewardText", reward);
+            SetObject(row, "actionCostText", cost);
+            SetObject(row, "actionButton", action);
             return row;
         }
 

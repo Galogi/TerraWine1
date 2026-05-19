@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TerraWine.Core;
 using TerraWine.Data;
+using TerraWine.WorldMap;
 using TerraWine.Winery;
 using UnityEngine;
 
@@ -47,6 +48,7 @@ namespace TerraWine.Testing
                 TestBarrelLoop();
                 TestOfflineProgress();
                 TestShop();
+                TestWorldMap();
                 TestDailyActions();
             }
             catch (Exception exception)
@@ -65,6 +67,9 @@ namespace TerraWine.Testing
             PassIf(session.OfflineProgressSystem != null, "OfflineProgressSystem exists.");
             PassIf(session.ResourceSystem != null, "ResourceSystem exists.");
             PassIf(session.ShopSystem != null, "ShopSystem exists.");
+            PassIf(session.WorldMapSystem != null, "WorldMapSystem exists.");
+            PassIf(session.WeatherSystem != null, "WeatherSystem exists.");
+            PassIf(session.FortuneTellerSystem != null, "FortuneTellerSystem exists.");
             PassIf(session.InventorySystem != null, "InventorySystem exists.");
             PassIf(session.StorageSystem != null, "StorageSystem exists.");
             PassIf(session.VineyardSystem != null, "VineyardSystem exists.");
@@ -310,6 +315,86 @@ namespace TerraWine.Testing
             int barrelsBefore = session.Data.winery.barrels.Count;
             PassIf(session.ShopSystem.Buy("shop_barrel_basic_oak"), "Buying a barrel succeeds.");
             PassIf(session.Data.winery.barrels.Count == barrelsBefore + 1, "Barrel count increases.");
+        }
+
+        private void TestWorldMap()
+        {
+            Info("WORLD MAP TEST");
+            session.StartNewGame();
+            PassIf(session.WorldMapSystem != null, "WorldMapSystem exists.");
+            PassIf(session.DailyActionSystem.ActionsRemaining > 0, "Player has daily world actions.");
+            PassIf(session.WorldMapSystem.GetNode("water_source_near") != null, "World map catalog has water source.");
+            PassIf(session.WorldMapSystem.GetNode("forest_near") != null, "World map catalog has forest.");
+            PassIf(session.WorldMapSystem.GetNode("metal_mine_mid") != null, "World map catalog has metal mine.");
+            PassIf(session.WorldMapSystem.GetNode("old_ruins") != null, "World map catalog has ruins.");
+
+            int actionsBeforeWood = session.DailyActionSystem.ActionsRemaining;
+            int woodBefore = session.ResourceSystem.Wood;
+            PassIf(session.WorldMapSystem.StartNodeAction("forest_near"), "Gathering wood succeeds.");
+            PassIf(session.DailyActionSystem.ActionsRemaining == actionsBeforeWood - 1, "Wood gathering consumes one daily action.");
+            PassIf(session.ResourceSystem.Wood > woodBefore, "Wood gathering increases wood.");
+
+            int actionsBeforeMetal = session.DailyActionSystem.ActionsRemaining;
+            int metalBefore = session.ResourceSystem.Metal;
+            PassIf(session.WorldMapSystem.StartNodeAction("metal_mine_mid"), "Gathering metal succeeds.");
+            PassIf(session.DailyActionSystem.ActionsRemaining == actionsBeforeMetal - 1, "Metal gathering consumes one daily action.");
+            PassIf(session.ResourceSystem.Metal > metalBefore, "Metal gathering increases metal.");
+
+            int actionsBeforeWater = session.DailyActionSystem.ActionsRemaining;
+            int waterBefore = session.ResourceSystem.Water;
+            PassIf(session.WorldMapSystem.StartNodeAction("water_source_near"), "Water gathering starts.");
+            PassIf(session.DailyActionSystem.ActionsRemaining == actionsBeforeWater - 1, "Water gathering consumes one daily action.");
+            TimedTaskData waterTask = session.WorldMapSystem.GetWorldTasks().Find(task => task.definitionId == "water_source_near");
+            ForceTaskComplete(waterTask);
+            session.WorldMapSystem.UpdateWorldTasks();
+            PassIf(waterTask != null && waterTask.isComplete, "Water gathering task becomes complete.");
+            PassIf(waterTask != null && session.WorldMapSystem.CollectCompletedWorldTask(waterTask.taskId), "Completed water gathering can be collected.");
+            PassIf(session.ResourceSystem.Water > waterBefore, "Water gathering increases water after collection.");
+
+            int actionsBeforeRuins = session.DailyActionSystem.ActionsRemaining;
+            int rewardHistoryBefore = session.Data.worldMap.ruinsRewardHistory.Count;
+            int moneyBeforeRuins = session.ResourceSystem.Money;
+            int woodBeforeRuins = session.ResourceSystem.Wood;
+            int metalBeforeRuins = session.ResourceSystem.Metal;
+            int waterBeforeRuins = session.ResourceSystem.Water;
+            int relicBefore = session.InventorySystem.GetAmount("rare_ruins_relic");
+            PassIf(session.WorldMapSystem.StartNodeAction("old_ruins"), "Ruins excavation succeeds.");
+            PassIf(session.DailyActionSystem.ActionsRemaining == actionsBeforeRuins - 1, "Ruins excavation consumes one daily action.");
+            bool gotRuinsReward = session.Data.worldMap.ruinsRewardHistory.Count > rewardHistoryBefore
+                || session.ResourceSystem.Money > moneyBeforeRuins
+                || session.ResourceSystem.Wood > woodBeforeRuins
+                || session.ResourceSystem.Metal > metalBeforeRuins
+                || session.ResourceSystem.Water > waterBeforeRuins
+                || session.InventorySystem.GetAmount("rare_ruins_relic") > relicBefore;
+            PassIf(gotRuinsReward, "Ruins excavation grants one valid reward.");
+
+            while (session.DailyActionSystem.ActionsRemaining > 0)
+            {
+                session.DailyActionSystem.SpendAction();
+            }
+
+            int woodBeforeFail = session.ResourceSystem.Wood;
+            PassIf(!session.WorldMapSystem.StartNodeAction("forest_near"), "World map action fails when daily actions are zero.");
+            PassIf(session.ResourceSystem.Wood == woodBeforeFail, "Failed world map action does not increase resources.");
+
+            DateTime yesterdayBeforeRefresh = DateTime.Now.Date.AddDays(-1).AddHours(7).ToUniversalTime();
+            session.Data.dailyActions.lastRefreshAtUtc = session.TimeSystem.ToSaveString(yesterdayBeforeRefresh);
+            PassIf(session.DailyActionSystem.RefreshIfNeeded(), "Daily action refresh can be simulated across 08:00.");
+            PassIf(session.DailyActionSystem.ActionsRemaining == session.DailyActionSystem.MaxActions, "Daily actions return to max after refresh.");
+
+            int waterBeforeRain = session.ResourceSystem.Water;
+            session.WeatherSystem.ForceWeather(WeatherType.Rain);
+            PassIf(session.WeatherSystem.CurrentWeather == WeatherType.Rain, "WeatherSystem can force rain for test.");
+            PassIf(session.ResourceSystem.Water > waterBeforeRain || session.Data.weather.rainRewardAppliedToday, "Rain is saved and applies water reward once.");
+
+            int moneyBeforeForecast = session.ResourceSystem.Money;
+            PassIf(session.FortuneTellerSystem.AskForRainForecast(), "Fortune teller forecast succeeds with enough money.");
+            PassIf(session.ResourceSystem.Money < moneyBeforeForecast, "Fortune teller forecast costs money.");
+            PassIf(!string.IsNullOrWhiteSpace(session.Data.weather.lastForecastMessage), "Fortune teller stores forecast message.");
+
+            session.Data.resources.money = 0;
+            PassIf(!session.FortuneTellerSystem.AskForRainForecast(), "Fortune teller fails safely without enough money.");
+            PassIf(session.ResourceSystem.Money >= 0, "Failed fortune teller request does not make money negative.");
         }
 
         private WineRecipeRuntimeDefinition GetFirstOwnedAvailableRecipe()
