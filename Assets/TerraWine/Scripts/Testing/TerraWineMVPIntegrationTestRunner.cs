@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TerraWine.Core;
 using TerraWine.Data;
+using TerraWine.Theft;
 using TerraWine.WorldMap;
 using TerraWine.Winery;
 using UnityEngine;
@@ -49,6 +50,7 @@ namespace TerraWine.Testing
                 TestOfflineProgress();
                 TestShop();
                 TestWorldMap();
+                TestTheft();
                 TestDailyActions();
             }
             catch (Exception exception)
@@ -70,6 +72,9 @@ namespace TerraWine.Testing
             PassIf(session.WorldMapSystem != null, "WorldMapSystem exists.");
             PassIf(session.WeatherSystem != null, "WeatherSystem exists.");
             PassIf(session.FortuneTellerSystem != null, "FortuneTellerSystem exists.");
+            PassIf(session.TheftSystem != null, "TheftSystem exists.");
+            PassIf(session.VaultSystem != null, "VaultSystem exists.");
+            PassIf(session.BotWinerySystem != null, "BotWinerySystem exists.");
             PassIf(session.InventorySystem != null, "InventorySystem exists.");
             PassIf(session.StorageSystem != null, "StorageSystem exists.");
             PassIf(session.VineyardSystem != null, "VineyardSystem exists.");
@@ -395,6 +400,59 @@ namespace TerraWine.Testing
             session.Data.resources.money = 0;
             PassIf(!session.FortuneTellerSystem.AskForRainForecast(), "Fortune teller fails safely without enough money.");
             PassIf(session.ResourceSystem.Money >= 0, "Failed fortune teller request does not make money negative.");
+        }
+
+        private void TestTheft()
+        {
+            Info("THEFT TEST");
+            session.StartNewGame();
+            PassIf(session.TheftSystem != null, "TheftSystem exists.");
+            PassIf(session.VaultSystem != null, "VaultSystem exists.");
+            PassIf(session.BotWinerySystem != null, "BotWinerySystem exists.");
+            PassIf(session.VaultSystem.PlayerVaultDigits == 3, "Player starts with a 3-digit vault.");
+            PassIf(session.BotWinerySystem.Bots.Count >= 2, "Bot catalog has at least 2 rival wineries.");
+
+            BotWineryData roseHill = session.BotWinerySystem.GetBot("bot_rose_hill");
+            string targetRecipe = "recipe_rose_blend";
+            int actionsBeforeWrong = session.DailyActionSystem.ActionsRemaining;
+            int reputationBeforeWrong = session.Data.player.reputation;
+            int modifiersBeforeWrong = session.Data.temporarySaleModifiers.Count;
+            PassIf(!session.TheftSystem.TryStealRecipe(roseHill.botWineryId, targetRecipe, "999"), "Recipe theft with wrong password fails.");
+            PassIf(session.DailyActionSystem.ActionsRemaining == actionsBeforeWrong - 1, "Failed theft consumes one daily action.");
+            PassIf(session.Data.player.reputation < reputationBeforeWrong, "Failed theft decreases player reputation.");
+            PassIf(session.Data.temporarySaleModifiers.Count > modifiersBeforeWrong, "Failed theft adds sale penalty modifier data.");
+            PassIf(!session.RecipeSystem.IsOwned(targetRecipe), "Failed theft does not grant recipe.");
+
+            int actionsBeforeCorrect = session.DailyActionSystem.ActionsRemaining;
+            int historyBeforeCorrect = session.Data.theftHistory.Count;
+            PassIf(session.TheftSystem.TryStealRecipe(roseHill.botWineryId, targetRecipe, "123"), "Recipe theft with correct password succeeds.");
+            PassIf(session.DailyActionSystem.ActionsRemaining == actionsBeforeCorrect - 1, "Successful theft consumes one daily action.");
+            PassIf(session.RecipeSystem.IsOwned(targetRecipe), "Successful theft grants stolen recipe to player.");
+            TheftHistoryData lastTheft = session.Data.theftHistory.Count == 0 ? null : session.Data.theftHistory[session.Data.theftHistory.Count - 1];
+            PassIf(session.Data.theftHistory.Count > historyBeforeCorrect && lastTheft != null && lastTheft.success, "Successful theft records history.");
+
+            while (session.DailyActionSystem.ActionsRemaining > 0)
+            {
+                session.DailyActionSystem.SpendAction();
+            }
+
+            int reputationBeforeNoAction = session.Data.player.reputation;
+            int historyBeforeNoAction = session.Data.theftHistory.Count;
+            PassIf(!session.TheftSystem.TryStealRecipe("bot_golden_barrel", "recipe_gold_reserve", "742"), "Theft fails safely with zero daily actions.");
+            PassIf(session.Data.player.reputation == reputationBeforeNoAction, "Zero-action theft does not apply reputation penalty.");
+            PassIf(session.Data.theftHistory.Count == historyBeforeNoAction, "Zero-action theft does not change theft history.");
+
+            session.StartNewGame();
+            PassIf(session.TheftSystem.MarkPlayerRecipeStolen("house_red"), "Player recipe can be marked stolen.");
+            PassIf(!session.RecipeSystem.IsAvailable("house_red"), "Stolen player recipe is unavailable.");
+            WineRecipeRuntimeDefinition houseRed = session.RecipeSystem.GetRecipe("house_red");
+            EnsureIngredients(houseRed);
+            PassIf(!session.WineProductionSystem.StartProduction("house_red"), "WineProductionSystem refuses stolen recipe.");
+            PassIf(session.TheftSystem.ReturnPlayerRecipe("house_red"), "Stolen player recipe can return.");
+            PassIf(session.RecipeSystem.IsAvailable("house_red"), "Returned player recipe is available again.");
+
+            PassIf(session.VaultSystem.UpgradePlayerVault(4), "Player vault upgrades to 4 digits.");
+            PassIf(session.VaultSystem.PlayerVaultDigits == 4 && session.Data.winery.vaultLevel == 2, "Vault digit count and level save after upgrade.");
         }
 
         private WineRecipeRuntimeDefinition GetFirstOwnedAvailableRecipe()

@@ -89,6 +89,7 @@ namespace TerraWine.EditorTools
             GameObject leftColumn = CreateColumn(body.transform, 0.8f);
             CreateVineyardPanel(leftColumn.transform);
             CreateStoragePanel(leftColumn.transform);
+            CreateTheftPanel(leftColumn.transform);
 
             GameObject middleColumn = CreateColumn(body.transform, 1.05f);
             CreateWorldMapPanel(middleColumn.transform);
@@ -344,6 +345,50 @@ namespace TerraWine.EditorTools
             return row;
         }
 
+        private static void CreateTheftPanel(Transform parent)
+        {
+            GameObject panel = CreateSection(parent, "Theft", 1f);
+            TheftPanelController controller = panel.AddComponent<TheftPanelController>();
+            TMP_Text status = AddText(panel.transform, "TheftStatus", "Reputation: -", 17, FontStyles.Bold, TextAlignmentOptions.Left);
+            TMP_Text message = AddText(panel.transform, "TheftMessage", "", 17, FontStyles.Normal, TextAlignmentOptions.Left);
+            TMP_InputField input = AddInput(panel.transform, "PasswordGuess", "Password guess");
+            AddHeaderRow(panel.transform, "Bot", "Vault", "Recipes", "Defense", "Action");
+            Transform rowsRoot = CreateRowsRoot(panel.transform, "TheftBotRows");
+            TheftBotRowController row = CreateTheftBotRow(rowsRoot, "TheftBotRowTemplate");
+            row.gameObject.SetActive(false);
+            GameObject actions = CreateActionGroup(panel.transform, "TheftActions");
+            Button steal = AddButton(actions.transform, "Try Steal Recipe", new Color(0.44f, 0.25f, 0.30f));
+            Button simulate = AddButton(actions.transform, "Simulate Player Recipe Stolen", new Color(0.42f, 0.30f, 0.20f));
+            Button returnRecipe = AddButton(actions.transform, "Return Stolen Recipe", new Color(0.28f, 0.42f, 0.28f));
+
+            SetObject(controller, "statusText", status);
+            SetObject(controller, "messageText", message);
+            SetObject(controller, "passwordInput", input);
+            SetObject(controller, "botRowsRoot", rowsRoot);
+            SetObject(controller, "botRowPrefab", row);
+            SetObject(controller, "stealRecipeButton", steal);
+            SetObject(controller, "simulatePlayerRecipeStolenButton", simulate);
+            SetObject(controller, "returnStolenRecipeButton", returnRecipe);
+        }
+
+        private static TheftBotRowController CreateTheftBotRow(Transform parent, string name)
+        {
+            GameObject rowObject = CreateRow(parent, name);
+            TheftBotRowController row = rowObject.AddComponent<TheftBotRowController>();
+            TMP_Text botName = AddCell(rowObject.transform, "Bot");
+            TMP_Text vault = AddCell(rowObject.transform, "Vault");
+            TMP_Text recipes = AddCell(rowObject.transform, "Recipes");
+            TMP_Text defense = AddCell(rowObject.transform, "Defense");
+            Button select = AddButton(rowObject.transform, "Select", new Color(0.32f, 0.36f, 0.50f));
+
+            SetObject(row, "nameText", botName);
+            SetObject(row, "vaultText", vault);
+            SetObject(row, "recipesText", recipes);
+            SetObject(row, "defenseText", defense);
+            SetObject(row, "selectButton", select);
+            return row;
+        }
+
         private static void CreateBarrelPanel(Transform parent)
         {
             GameObject panel = CreateSection(parent, "Barrel Cellar", 1f);
@@ -513,6 +558,22 @@ namespace TerraWine.EditorTools
             TMP_Text text = AddText(buttonObject.transform, "Label", label, 15, FontStyles.Bold, TextAlignmentOptions.Center);
             Stretch(text.gameObject, 4f);
             return button;
+        }
+
+        private static TMP_InputField AddInput(Transform parent, string name, string placeholder)
+        {
+            GameObject inputObject = CreatePanel(parent, name, new Color(0.12f, 0.15f, 0.13f));
+            LayoutElement element = inputObject.AddComponent<LayoutElement>();
+            element.minHeight = 36f;
+            TMP_InputField input = inputObject.AddComponent<TMP_InputField>();
+            TMP_Text text = AddText(inputObject.transform, "Text", "", 16, FontStyles.Normal, TextAlignmentOptions.Left);
+            TMP_Text placeholderText = AddText(inputObject.transform, "Placeholder", placeholder, 16, FontStyles.Italic, TextAlignmentOptions.Left);
+            placeholderText.color = new Color(0.60f, 0.64f, 0.58f);
+            Stretch(text.gameObject, 8f);
+            Stretch(placeholderText.gameObject, 8f);
+            input.textComponent = text;
+            input.placeholder = placeholderText;
+            return input;
         }
 
         private static TMP_Text AddText(Transform parent, string name, string value, int fontSize, FontStyles style, TextAlignmentOptions alignment)

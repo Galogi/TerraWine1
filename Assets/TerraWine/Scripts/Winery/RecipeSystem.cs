@@ -28,6 +28,26 @@ namespace TerraWine.Winery
                     25,
                     30,
                     52)
+            },
+            {
+                "recipe_rose_blend",
+                new WineRecipeRuntimeDefinition(
+                    "recipe_rose_blend",
+                    "Rose Blend",
+                    new List<RecipeIngredient> { new RecipeIngredient("grape_merlot", "Merlot Grapes", 1), new RecipeIngredient("grape_muscat", "Muscat Grapes", 1) },
+                    35,
+                    42,
+                    60)
+            },
+            {
+                "recipe_gold_reserve",
+                new WineRecipeRuntimeDefinition(
+                    "recipe_gold_reserve",
+                    "Gold Reserve",
+                    new List<RecipeIngredient> { new RecipeIngredient("grape_merlot", "Merlot Grapes", 2) },
+                    40,
+                    55,
+                    65)
             }
         };
 
@@ -84,6 +104,51 @@ namespace TerraWine.Winery
         public RecipeStateData GetState(string recipeId)
         {
             return data.recipes.Find(recipe => recipe.recipeId == recipeId);
+        }
+
+        public void LearnRecipe(string recipeId)
+        {
+            RecipeStateData state = GetState(recipeId);
+            if (state == null)
+            {
+                data.recipes.Add(new RecipeStateData { recipeId = recipeId, isKnown = true });
+            }
+            else
+            {
+                state.isKnown = true;
+                state.isStolen = false;
+                state.stolenUntilUtc = string.Empty;
+            }
+
+            RecipesChanged?.Invoke();
+        }
+
+        public bool MarkRecipeStolen(string recipeId, TimeSpan duration)
+        {
+            RecipeStateData state = GetState(recipeId);
+            if (state == null || !state.isKnown)
+            {
+                return false;
+            }
+
+            state.isStolen = true;
+            state.stolenUntilUtc = session.TimeSystem.ToSaveString(session.TimeSystem.UtcNow.Add(duration));
+            RecipesChanged?.Invoke();
+            return true;
+        }
+
+        public bool ReturnStolenRecipe(string recipeId)
+        {
+            RecipeStateData state = GetState(recipeId);
+            if (state == null)
+            {
+                return false;
+            }
+
+            state.isStolen = false;
+            state.stolenUntilUtc = string.Empty;
+            RecipesChanged?.Invoke();
+            return true;
         }
 
         public void RefreshStolenRecipes()

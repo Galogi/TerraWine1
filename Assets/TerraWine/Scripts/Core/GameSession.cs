@@ -2,6 +2,7 @@ using System;
 using TerraWine.Data;
 using TerraWine.Economy;
 using TerraWine.Inventory;
+using TerraWine.Theft;
 using TerraWine.Tutorial;
 using TerraWine.WorldMap;
 using TerraWine.Winery;
@@ -21,6 +22,10 @@ namespace TerraWine.Core
         public WeatherSystem WeatherSystem { get; private set; }
         public FortuneTellerSystem FortuneTellerSystem { get; private set; }
         public WorldMapSystem WorldMapSystem { get; private set; }
+        public BotWinerySystem BotWinerySystem { get; private set; }
+        public VaultSystem VaultSystem { get; private set; }
+        public TheftSystem TheftSystem { get; private set; }
+        public ReputationSystem ReputationSystem { get; private set; }
         public StorageSystem StorageSystem { get; private set; }
         public InventorySystem InventorySystem { get; private set; }
         public TutorialSystem TutorialSystem { get; private set; }
@@ -89,6 +94,10 @@ namespace TerraWine.Core
             WeatherSystem = new WeatherSystem();
             FortuneTellerSystem = new FortuneTellerSystem();
             WorldMapSystem = new WorldMapSystem();
+            BotWinerySystem = new BotWinerySystem();
+            VaultSystem = new VaultSystem();
+            ReputationSystem = new ReputationSystem();
+            TheftSystem = new TheftSystem();
             StorageSystem = new StorageSystem();
             InventorySystem = new InventorySystem();
             TutorialSystem = new TutorialSystem();
@@ -106,6 +115,10 @@ namespace TerraWine.Core
             WeatherSystem.Initialize(this, Data);
             FortuneTellerSystem.Initialize(this, Data);
             WorldMapSystem.Initialize(this, Data);
+            BotWinerySystem.Initialize(this, Data);
+            VaultSystem.Initialize(this, Data);
+            ReputationSystem.Initialize(this, Data);
+            TheftSystem.Initialize(this, Data);
             StorageSystem.Initialize(this, Data);
             InventorySystem.Initialize(this, Data);
             TutorialSystem.Initialize(this, Data);

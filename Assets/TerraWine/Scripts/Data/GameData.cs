@@ -86,6 +86,19 @@ namespace TerraWine.Data
         Rain
     }
 
+    public enum TheftTargetType
+    {
+        Recipe,
+        Bottle,
+        Resources
+    }
+
+    public enum SaleModifierType
+    {
+        SalePenalty,
+        SaleBonus
+    }
+
     [Serializable]
     public class GameData
     {
@@ -108,6 +121,8 @@ namespace TerraWine.Data
         public List<ReputationModifierData> reputationModifiers = new List<ReputationModifierData>();
         public List<CompetitionData> competitions = new List<CompetitionData>();
         public List<BotWineryData> botWineries = new List<BotWineryData>();
+        public List<TheftHistoryData> theftHistory = new List<TheftHistoryData>();
+        public List<TemporarySaleModifierData> temporarySaleModifiers = new List<TemporarySaleModifierData>();
         public List<DailyMissionData> dailyMissions = new List<DailyMissionData>();
         public TutorialProgressData tutorialProgress = new TutorialProgressData();
         public SeasonStateData seasonState = new SeasonStateData();
@@ -131,6 +146,7 @@ namespace TerraWine.Data
         public string wineryName = "TerraWine Winery";
         public bool isPlacedOnWorldMap;
         public Vector2Serializable worldMapPosition = new Vector2Serializable();
+        public int vaultLevel = 1;
         public int vaultDigits = 3;
         public string vaultPassword = "123";
         public List<VineyardPlotData> vineyardPlots = new List<VineyardPlotData>();
@@ -332,7 +348,40 @@ namespace TerraWine.Data
         public string botWineryId;
         public string definitionId;
         public string wineryName;
+        public string displayName;
         public int reputation;
+        public int vaultDigits = 3;
+        public string vaultPassword;
+        public List<string> ownedRecipeIds = new List<string>();
+        public int storedBottleCount;
+        public ResourceData storedResources = new ResourceData();
+        public int defenseLevel;
+        public string lastTheftResult;
+        public List<string> stolenRecipeIds = new List<string>();
+    }
+
+    [Serializable]
+    public class TheftHistoryData
+    {
+        public string theftId = Guid.NewGuid().ToString("N");
+        public string attackerId;
+        public string defenderId;
+        public TheftTargetType targetType;
+        public string targetId;
+        public bool success;
+        public string resultMessage;
+        public string occurredAtUtc;
+    }
+
+    [Serializable]
+    public class TemporarySaleModifierData
+    {
+        public string modifierId = Guid.NewGuid().ToString("N");
+        public SaleModifierType type;
+        public float percentModifier;
+        public string expiresAtUtc;
+        public string source;
+        public string reason;
     }
 
     [Serializable]

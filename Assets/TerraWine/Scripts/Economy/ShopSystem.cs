@@ -138,7 +138,7 @@ namespace TerraWine.Economy
                     data.storage.upgradeLevel++;
                     break;
                 case ShopItemCategory.Vault:
-                    data.winery.vaultDigits = Math.Max(data.winery.vaultDigits, 4);
+                    session.VaultSystem.UpgradePlayerVault(4);
                     break;
             }
         }
