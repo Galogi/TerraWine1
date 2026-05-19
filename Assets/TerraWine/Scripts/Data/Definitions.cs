@@ -40,6 +40,7 @@ namespace TerraWine.Data
         public bool supportsSemiDry = true;
         public int productionSeconds = 600;
         public int basePrice = 25;
+        public int baseQuality = 50;
         public int baseCompetitionScore = 50;
     }
 

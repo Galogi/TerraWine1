@@ -152,6 +152,7 @@ namespace TerraWine.Data
         public string ownerId;
         public string startedAtUtc;
         public string completesAtUtc;
+        public int amount = 1;
         public bool isComplete;
     }
 
@@ -194,8 +195,10 @@ namespace TerraWine.Data
     public class WineBottleData
     {
         public string bottleId = Guid.NewGuid().ToString("N");
+        public string itemId;
         public string recipeId;
         public string barrelDefinitionId;
+        public string producedAtUtc;
         public int qualityScore;
         public int salePrice;
         public bool isAged;

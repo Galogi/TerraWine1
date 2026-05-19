@@ -7,14 +7,16 @@ namespace TerraWine.Inventory
 {
     public class InventorySystem : IGameSystem
     {
+        private GameSession session;
         private GameData data;
 
         public event Action InventoryChanged;
 
         public IReadOnlyList<InventoryStackData> Stacks => data.inventory.stacks;
 
-        public void Initialize(GameSession session, GameData gameData)
+        public void Initialize(GameSession gameSession, GameData gameData)
         {
+            session = gameSession;
             data = gameData;
         }
 
@@ -26,9 +28,19 @@ namespace TerraWine.Inventory
 
         public void AddItem(string itemId, InventoryItemType itemType, int amount)
         {
+            TryAddItem(itemId, itemType, amount);
+        }
+
+        public bool TryAddItem(string itemId, InventoryItemType itemType, int amount)
+        {
             if (string.IsNullOrWhiteSpace(itemId) || amount <= 0)
             {
-                return;
+                return false;
+            }
+
+            if (session?.StorageSystem != null && !session.StorageSystem.HasSpace(amount))
+            {
+                return false;
             }
 
             InventoryStackData stack = FindStack(itemId);
@@ -46,6 +58,8 @@ namespace TerraWine.Inventory
             stack.amount += amount;
             data.storage.usedCapacity += amount;
             InventoryChanged?.Invoke();
+            session?.StorageSystem?.NotifyStorageChanged();
+            return true;
         }
 
         public bool RemoveItem(string itemId, int amount)
@@ -64,6 +78,7 @@ namespace TerraWine.Inventory
             }
 
             InventoryChanged?.Invoke();
+            session?.StorageSystem?.NotifyStorageChanged();
             return true;
         }
 

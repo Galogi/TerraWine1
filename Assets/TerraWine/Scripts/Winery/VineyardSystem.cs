@@ -124,7 +124,13 @@ namespace TerraWine.Winery
             }
 
             SeedRuntimeDefinition seed = GetSeed(plot.plantedSeedId);
-            session.InventorySystem.AddItem(plot.grapeId, InventoryItemType.Grape, Math.Max(1, plot.harvestAmount));
+            int harvestAmount = Math.Max(1, plot.harvestAmount);
+            if (!session.InventorySystem.TryAddItem(plot.grapeId, InventoryItemType.Grape, harvestAmount))
+            {
+                RaiseMessage("Storage is full. Free space before harvesting.");
+                return false;
+            }
+
             ClearPlot(plot);
 
             session.TutorialSystem?.CompleteStep(TutorialSystem.HarvestGrapesStepId);

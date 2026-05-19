@@ -16,9 +16,13 @@ namespace TerraWine.Core
         public CalendarSystem CalendarSystem { get; private set; }
         public DailyActionSystem DailyActionSystem { get; private set; }
         public ResourceSystem ResourceSystem { get; private set; }
+        public StorageSystem StorageSystem { get; private set; }
         public InventorySystem InventorySystem { get; private set; }
         public TutorialSystem TutorialSystem { get; private set; }
         public VineyardSystem VineyardSystem { get; private set; }
+        public RecipeSystem RecipeSystem { get; private set; }
+        public WineQualitySystem WineQualitySystem { get; private set; }
+        public WineProductionSystem WineProductionSystem { get; private set; }
         public GameData Data { get; private set; }
         public bool IsLoaded { get; private set; }
 
@@ -75,17 +79,25 @@ namespace TerraWine.Core
             CalendarSystem = new CalendarSystem();
             DailyActionSystem = new DailyActionSystem();
             ResourceSystem = new ResourceSystem();
+            StorageSystem = new StorageSystem();
             InventorySystem = new InventorySystem();
             TutorialSystem = new TutorialSystem();
             VineyardSystem = new VineyardSystem();
+            RecipeSystem = new RecipeSystem();
+            WineQualitySystem = new WineQualitySystem();
+            WineProductionSystem = new WineProductionSystem();
             OfflineProgressSystem = new OfflineProgressSystem();
 
             CalendarSystem.Initialize(this, Data);
             DailyActionSystem.Initialize(this, Data);
             ResourceSystem.Initialize(this, Data);
+            StorageSystem.Initialize(this, Data);
             InventorySystem.Initialize(this, Data);
             TutorialSystem.Initialize(this, Data);
             VineyardSystem.Initialize(this, Data);
+            RecipeSystem.Initialize(this, Data);
+            WineQualitySystem.Initialize(this, Data);
+            WineProductionSystem.Initialize(this, Data);
             OfflineProgressSystem.Initialize(this, Data);
         }
 
